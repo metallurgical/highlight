@@ -27,6 +27,18 @@
 			.td_unselected{
 				background: #fff;
 			}
+
+			.td_all_seat{
+				background: #FDD405;
+			}
+
+			.td_available_seat{
+				background: #4CB348;
+			}
+
+			.td_unavailable_seat{
+				background: #E5423A;
+			}
 		</style>
 	</head>
 	<body>
@@ -41,6 +53,11 @@
 		<br/>
 
 		<table id="render_layout" border="1" cellpadding="5" cellspacing="10" width="500"></table>
+		<select id="set_status_seat">
+			<option value="td_all_seat">Marked selected seat to the layout</option>
+			<option value="td_available_seat">Available seat</option>
+			<option value="td_unavailable_seat">Booked seat</option>
+		</select>
 		<div style="display:none" id="seat_config">
 		<input type="text" id="seat_number" data-s_number="">
 		<input type="button" name="" value="Save" id="save_seat_number">
@@ -63,9 +80,10 @@
 				td                   = $('#render_layout tr td'),
 				seat_config          = $('#seat_config'),
 				seat_number          = $('#seat_number'),
-				save_seat_number     = $('#save_seat_number');
+				save_seat_number     = $('#save_seat_number'),
+				set_status_seat 	 = $('#set_status_seat');
 
-				var current_select;
+				var current_select,seat_selected = [];
 			
 
 			    create_layout_button.on('click', function(){
@@ -84,22 +102,36 @@
 
 
 			    render_layout.on('click','td',function(){
-			    	current_select = $(this).attr('id');
+			    	current_select = parseInt($(this).attr('id'));
 			    	if($(this).hasClass('td_selected')){
 			    		$(this).removeClass('td_selected')
 			    			   .addClass('td_unselected');
-
+			    		seat_selected.splice( $.inArray(current_select, seat_selected), 1 );
 
 			    	}
 			    	else{
-			    		seat_config.show();
+			    		
 			    		$(this).removeClass('td_unselected')
-			    			   .addClass('td_selected');			    		
+			    			   .addClass('td_selected');
+			    		seat_selected.push(current_select);
+			    		
+
+
+			    	 	/* after this
+			    		seat_config.show();		    		
 			    	    seat_number.val('')
-			    	    		   .attr('data-s_number',current_select);		    	   
+			    	    		   .attr('data-s_number',current_select);*/	  
+
+
 			    		 
 			    	}	
 			    });
+
+			    set_status_seat.on('change', function(){
+			    	for(var o = 0; o < seat_selected.length; o++){
+			    		$('#'+ seat_selected[o]).addClass($(this).val());
+			    	}
+			    })
 
 			    save_seat_number.on('click', function(){
 			    	$('#'+seat_number.attr('data-s_number')).text(seat_number.val());
